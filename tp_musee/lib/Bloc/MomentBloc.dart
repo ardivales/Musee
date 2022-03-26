@@ -20,6 +20,10 @@ class MomentBloc {
     return _momentRepository.getAllMoment();
   }
 
+  addMoment(Moment moment) async {
+    await _momentRepository.insertMoment(moment);
+    getMoment();
+  }
 
   dispose() {
     _paysController.close();

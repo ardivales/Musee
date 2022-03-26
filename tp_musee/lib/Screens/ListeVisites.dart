@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tp_musee/Bloc/MomentBloc.dart';
 import 'package:tp_musee/Bloc/VisiterBloc.dart';
 import 'package:tp_musee/Models/Moment.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import '../Bloc/MuseeBloc.dart';
 import '../Models/Musee.dart';
 import '../Models/Visiter.dart';
@@ -25,7 +25,8 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
   final VisiterBloc visiterBloc= VisiterBloc();
   final MomentBloc momentBloc = MomentBloc();
   final MuseeBloc museeBloc = MuseeBloc();
-
+  DateTime selectedDate = DateTime.now();
+  String dateText = "";
   List<Musee> listMusee = [];
   List<Moment> listMoment = [];
   late dynamic selectedVisite ;
@@ -37,17 +38,19 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
   void initState() {
     var listMu = museeBloc.getMusees().then((value){
       listMusee = value;
-      museeSelected = listMusee[0];
+      if (listMusee.isNotEmpty){
+        museeSelected = listMusee[0];
       museeNum = listMusee[0].numMus;
       museeNom = listMusee[0].nomMus;
-      print('Liste des Musées ${value}');
+      }
+      print('Liste des Musées $value');
     });
     
-    var listMo = momentBloc.getMoment().then((value){
-      listMoment = value;
-      jour = listMoment[0].jour;
+    // var listMo = momentBloc.getMoment().then((value){
+    //   listMoment = value;
+    //   jour = listMoment[0].jour;
       
-    });
+    // });
 
     super.initState();
 
@@ -73,61 +76,65 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                   highlightColor: myColor,
                   onTap: () {
                   },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              snapshot.data![index]['nomMus'].toString(),
-                              style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
-                            ),
-                            Text(snapshot.data![index]['jour'].toString(), style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600),),
-                            Visibility(
-                              visible: false,
-                              child: Text(snapshot.data![index]['numMus'].toString(),
+                  child: Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      elevation: 0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                snapshot.data![index]['nomMus'].toString(),
                                 style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
                               ),
-                            ),
-                            const SizedBox(height: 5,)
-                          ],
-                        ),
-                        subtitle: Text(snapshot.data![index]['nbvisiteurs'].toString(),style: const TextStyle(fontSize: 12.0),),
-                        trailing: Wrap(
-                          children: [
-                            IconButton(icon: const Icon(
-                              Icons.edit, size: 20,
-                            ), 
-                            onPressed: () {
-
-                              setState(() {
-                                selectedVisite = snapshot.data![index];
-                                txtNbVisiteurs.text = snapshot.data![index]['nbvisiteurs'].toString();
-                                museeNum = int.parse(snapshot.data![index]['numMus'].toString());
-                                jour = snapshot.data![index]['jour'].toString();
-                                enableMoment = false;
-                                enableMusee = false;
-                                saveOrUpdateText = 'Modifier';
-                              });
-                              _showDialog();
-                              },),
-
+                              Text(snapshot.data![index]['jour'].toString(), style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600),),
+                              Visibility(
+                                visible: false,
+                                child: Text(snapshot.data![index]['numMus'].toString(),
+                                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                              const SizedBox(height: 5,)
+                            ],
+                          ),
+                          subtitle: Text(snapshot.data![index]['nbvisiteurs'].toString(),style: const TextStyle(fontSize: 12.0),),
+                          trailing: Wrap(
+                            children: [
                               IconButton(icon: const Icon(
-                              Icons.delete, size: 20,
-                            ), 
-                            onPressed: () {
-                              setState(() {
-                                selectedVisite = snapshot.data![index];
-                              });
-                              _showDialogConfirmation();
-                            },),
-                          ],
+                                Icons.edit, size: 20,
+                              ), 
+                              onPressed: () {
+                  
+                                setState(() {
+                                  selectedVisite = snapshot.data![index];
+                                  txtNbVisiteurs.text = snapshot.data![index]['nbvisiteurs'].toString();
+                                  museeNum = int.parse(snapshot.data![index]['numMus'].toString());
+                                  jour = snapshot.data![index]['jour'].toString();
+                                  enableMoment = false;
+                                  enableMusee = false;
+                                  saveOrUpdateText = 'Modifier';
+                                });
+                                _showDialog();
+                                },),
+                  
+                                IconButton(icon: const Icon(
+                                Icons.delete, size: 20,
+                              ), 
+                              onPressed: () {
+                                setState(() {
+                                  selectedVisite = snapshot.data![index];
+                                });
+                                _showDialogConfirmation();
+                              },),
+                            ],
+                          ),
                         ),
-                      ),
-                      const Divider()
-                    ],
+                        const Divider()
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -265,39 +272,27 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                         children: [
                           const Text("Moment"),
                           const Spacer(),
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: false,
-                              items: listMoment.map((moment) {
-                                return DropdownMenuItem<String>(
-                                  value: moment.jour,
-                                  child: SizedBox(
-                                    width: 150, //expand here
-                                    child: Text(
-                                      moment.jour,
-                                      style: const TextStyle(fontSize: 15),
-                                      textAlign: TextAlign.end,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: enableMoment ? (newValue) {
-                                setState(() {
-                                  jour = newValue.toString();
-                                });
-                              }
-                              : null,
-                              hint: const SizedBox(
-                                width: 150, //and here
-                                child: Text(
-                                  "Moment",
-                                  style: TextStyle(color: Colors.grey),
-                                  textAlign: TextAlign.end,
-                                ),
-                              ),
-                              style: TextStyle(color: myColor, decorationColor: Colors.red),
-                              value: jour,
-                            ),
+
+                          //Date
+                          Text(dateText,
+                            style: const TextStyle(color: Colors.black),
+                            
+                          ),
+                          IconButton(onPressed: () async {
+                            final DateTime? selected = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDate,
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(2025), 
+                            );
+                            if (selected != null && selected != selectedDate) {
+                              setState(() {
+                                selectedDate = selected;
+                                dateText = "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                              });
+                            }
+                          }, 
+                          icon: Icon(Icons.arrow_drop_down)
                           ),
                         ],
                       ),
@@ -329,8 +324,21 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () async {
-                            save();
-                            Navigator.pop(context);
+                            if (listMusee.isNotEmpty){
+                              save();
+                              Navigator.pop(context);
+                            }else{
+                              Fluttertoast.showToast(
+                                msg: "Veuillez enregistrer d'abord un musée",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 2,
+                                backgroundColor: Colors.blue,
+                                textColor: Colors.white,
+                                fontSize: 13.0
+                              );
+                            }
+                            
                           },
                           style: ButtonStyle(
                               backgroundColor:
@@ -420,17 +428,29 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
 
   @override
   void save() {
+    setState(() {
+      txtNbVisiteurs.text.trim().isEmpty
+          ? validate_nbVisiteurs = false
+          : validate_nbVisiteurs = true;
+    });
+    if (validate_nbVisiteurs) {
       Visiter visiter= Visiter(
-        jour: jour,
+        jour: dateText,
         numMus: museeNum, 
         nbvisiteurs: int.parse(txtNbVisiteurs.text.trim()),
       );
+
+      //Enregistrer le moment
+      Moment moment = Moment(jour: dateText);
+      momentBloc.addMoment(moment);
+      
       if (saveOrUpdateText == 'Enregistrer'){
         visiterBloc.addVisite(visiter);
       }else{
         print(visiter.jour);
         visiterBloc.updateVisite(visiter);
       }
+    }
      
   }
 

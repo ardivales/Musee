@@ -33,8 +33,11 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
   void initState() {
     var list = paysBloc.getPays().then((value){
       listPays = value;
-      codePays = listPays[0].codePays;
-      print('Liste des pays ${listPays[0].codePays}');
+      if(listPays.isNotEmpty){
+        codePays = listPays[0].codePays;
+        print('Liste des pays ${listPays[0].codePays}');
+      }
+      
     });
     
     super.initState();
@@ -313,8 +316,20 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () async {
-                            save();
-                            Navigator.pop(context);
+                            if (listPays.isNotEmpty){
+                              save();
+                              Navigator.pop(context);
+                            }else{
+                              Fluttertoast.showToast(
+                                msg: "Veuillez enregistrer d'abord un pays",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 2,
+                                backgroundColor: Colors.blue,
+                                textColor: Colors.white,
+                                fontSize: 13.0
+                              );
+                            }
                           },
                           style: ButtonStyle(
                               backgroundColor:
@@ -413,18 +428,22 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
           : validate_nblivres = true;
     });
     if (validate_nom && validate_nblivres) {
-      Musee musee = Musee(
-        numMus: 0,
-        nomMus: txtNomMus.text.trim(), 
-        nblivres:  int.parse(txtNblivres.text.trim()),
-        codePays: codePays,
-      );
-      if (saveOrUpdateText == 'Enregistrer'){
-        museeBloc.addMusee(musee);
-      }else{
-        museeBloc.updateMusee(musee);
+      try{
+        Musee musee = Musee(
+          numMus: 0,
+          nomMus: txtNomMus.text.trim(), 
+          nblivres:  int.parse(txtNblivres.text.trim()),
+          codePays: codePays,
+        );
+        if (saveOrUpdateText == 'Enregistrer'){
+          museeBloc.addMusee(musee);
+        }else{
+          museeBloc.updateMusee(musee);
+        }
+      }catch (e){
+        print(e);
       }
-     
+
     }
   }
 

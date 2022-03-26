@@ -6,4 +6,6 @@ class MomentRepository{
 
   Future<List<Moment>> getAllMoment() => momentDao.getMoment();
 
+  Future insertMoment(Moment moment) => momentDao.insertMoment(moment);
+
 }

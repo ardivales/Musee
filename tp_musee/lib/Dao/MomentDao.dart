@@ -20,4 +20,9 @@ class MomentDao{
 
   }
 
+  Future<int> insertMoment(Moment moment) async {
+    final db = await databaseProvider.database;
+    return await db.insert("MOMENT", moment.toJson());
+  }
+
 }

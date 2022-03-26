@@ -45,18 +45,23 @@ class _ListeBibliothequesState extends State<ListeBibliotheques> implements Aler
     dateText = "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
     var listM = museeBloc.getMusees().then((value){
       listMusee = value;
-      museeSelected = listMusee[0];
+      if(listMusee.isNotEmpty){
+        museeSelected = listMusee[0];
       museeNum = listMusee[0].numMus;
       museeNom = listMusee[0].nomMus;
       print('Liste des Musées ${listMusee[0].codePays}');
+      }
+      
     });
 
     var listO = ouvrageBloc.getOuvrage().then((value){
       listOuvrage= value;
-      ouvrageSelected = listOuvrage[0];
-      ouvrageISBN = listOuvrage[0].isbn;
-      ouvrageTitre = listOuvrage[0].titre + ' ('+ listOuvrage[0].isbn + ')';
-      print('Liste des Ouvrages ${listOuvrage[0].codePays}');
+      if (listOuvrage.isNotEmpty){
+        ouvrageSelected = listOuvrage[0];
+        ouvrageISBN = listOuvrage[0].isbn;
+        ouvrageTitre = listOuvrage[0].titre + ' ('+ listOuvrage[0].isbn + ')';
+        print('Liste des Ouvrages ${listOuvrage[0].codePays}');
+      }
     });
     
     super.initState();
@@ -66,8 +71,6 @@ class _ListeBibliothequesState extends State<ListeBibliotheques> implements Aler
   void dispose(){
     super.dispose();
   }
-
-  
 
   Widget getOuvrageWidget(AsyncSnapshot<List> snapshot) {
     if (snapshot.hasData) {
@@ -381,8 +384,33 @@ class _ListeBibliothequesState extends State<ListeBibliotheques> implements Aler
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () async {
-                            save();
-                            Navigator.pop(context);
+                            if(listMusee.isNotEmpty){
+                              if (listOuvrage.isNotEmpty){
+                                save();
+                                Navigator.pop(context);
+                              }else{
+                                Fluttertoast.showToast(
+                                  msg: "Veuillez enregistrer d'abord un ouvrage",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 2,
+                                  backgroundColor: Colors.blue,
+                                  textColor: Colors.white,
+                                  fontSize: 13.0
+                                );
+                              }
+                            }else{
+                              Fluttertoast.showToast(
+                                msg: "Veuillez enregistrer d'abord un musée",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 2,
+                                backgroundColor: Colors.blue,
+                                textColor: Colors.white,
+                                fontSize: 13.0
+                              );
+                            }
+                            
                           },
                           style: ButtonStyle(
                               backgroundColor:

@@ -34,4 +34,11 @@ class Musee {
         "nblivres": nblivres,
         "codePays": codePays,
     };
+
+    Map<String, dynamic> toJsonWithNumMus() => {
+        "numMus": numMus,
+        "nomMus": nomMus,
+        "nblivres": nblivres,
+        "codePays": codePays,
+    };
 }

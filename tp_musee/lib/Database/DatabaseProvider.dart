@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:tp_musee/Models/Musee.dart';
-
-import '../Models/Pays.dart';
 
 class DatabaseProvider{
   static final DatabaseProvider databaseProvider = DatabaseProvider._init();
@@ -80,14 +77,6 @@ class DatabaseProvider{
               FOREIGN KEY (jour) REFERENCES MOMENT (jour)
               CONSTRAINT pk_numMus_jour PRIMARY KEY(numMus, jour)
             )""");
-
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Lundi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Mardi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Mercredi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Jeudi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Vendredi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Samedi')""");
-    await db.execute("""INSERT INTO MOMENT (jour) values ('Dimanche')""");
 
   }
 

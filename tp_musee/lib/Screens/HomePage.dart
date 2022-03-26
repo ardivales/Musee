@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  var currentPage = DrawerSections.listePays;
+  var currentPage = DrawerSections.listeVisites;
   
   @override
   void initState() {
@@ -26,7 +26,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   toggleDrawer() async {
-    print ('eeeeee${_scaffoldKey.currentState!.isDrawerOpen}');
     if (_scaffoldKey.currentState!.isDrawerOpen) {
       _scaffoldKey.currentState!.openEndDrawer();
     } else {

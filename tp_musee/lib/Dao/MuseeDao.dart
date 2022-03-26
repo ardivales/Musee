@@ -12,7 +12,7 @@ class MuseeDao{
 
   Future<int> insertMusee(Musee musee) async {
     final db = await databaseProvider.database;
-    return await db.insert("MUSEE", musee.toJson());
+    return await db.insert("MUSEE", musee.toJsonWithNumMus());
   }
 
   Future<List<Musee>> getMusees() async{
@@ -27,9 +27,9 @@ class MuseeDao{
 
   Future<int> updateMusee(Musee musee) async{
     final db = await databaseProvider.database;
-
+    print(musee.numMus);
     return await db.update(
-      "MUSEE", musee.toJson(),
+      "MUSEE", musee.toJsonWithNumMus(),
       where: 'numMus = ?', 
       whereArgs: [musee.numMus]);
     
