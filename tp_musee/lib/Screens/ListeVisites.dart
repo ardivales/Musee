@@ -65,81 +65,100 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
   Widget getVisiteWidget(AsyncSnapshot<List> snapshot) {
     if (snapshot.hasData) {
       return snapshot.data!.isNotEmpty
-        ? ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: snapshot.data!.length,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext ctxt, int index) {
-              return Padding(
-                padding: const EdgeInsets.all(12),
-                child: InkWell(
-                  highlightColor: myColor,
-                  onTap: () {
-                  },
-                  child: Card(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                      elevation: 0,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                snapshot.data![index]['nomMus'].toString(),
-                                style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
-                              ),
-                              Text(snapshot.data![index]['jour'].toString(), style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600),),
-                              Visibility(
-                                visible: false,
-                                child: Text(snapshot.data![index]['numMus'].toString(),
-                                  style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+        ? Container(
+          margin: const EdgeInsets.all(20),
+          child: GridView.count(
+                          primary: false,
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.8,
+                          mainAxisSpacing: 15,
+                          crossAxisSpacing: 15,
+                          shrinkWrap: true,
+                          children: snapshot.data!.map((visite) {
+                            return GestureDetector(
+                              child: GridTile(
+                                child: Wrap(
+                                  children: [
+                                    Card(
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10)),
+                                      child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(height: 15),
+                                            Text(
+                                              visite['nomMus'].toString(),
+                                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Image.asset("assets/images/musee.png",
+                                            height: 50, width: 50,),
+                                            const SizedBox(height: 10),
+                                            Text(visite['jour'].toString(), style: const TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600),),
+                                            Text(visite['nbvisiteurs'].toString(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),),
+                                            Visibility(
+                                              visible: false,
+                                              child: Text(visite['numMus'].toString(),
+                                                style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600),
+                                              ),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.bottomLeft,
+                                              child: Container(
+                                                margin: const EdgeInsets.only(top:10),
+                                                color: Colors.grey[200],
+                                                child: Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    IconButton(icon: const Icon(
+                                                      Icons.edit, size: 20,
+                                                    ), 
+                                                    onPressed: () {
+                                        
+                                                      setState(() {
+                                                        selectedVisite = visite;
+                                                        txtNbVisiteurs.text = visite['nbvisiteurs'].toString();
+                                                        museeNum = int.parse(visite['numMus'].toString());
+                                                        jour = visite['jour'].toString();
+                                                        enableMoment = false;
+                                                        enableMusee = false;
+                                                        saveOrUpdateText = 'Modifier';
+                                                      });
+                                                      _showDialog();
+                                                      },),
+                                        
+                                                      IconButton(icon: const Icon(
+                                                      Icons.delete, size: 20,
+                                                    ), 
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        selectedVisite = visite;
+                                                      });
+                                                      _showDialogConfirmation();
+                                                    },),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 5,)
-                            ],
-                          ),
-                          subtitle: Text(snapshot.data![index]['nbvisiteurs'].toString(),style: const TextStyle(fontSize: 12.0),),
-                          trailing: Wrap(
-                            children: [
-                              IconButton(icon: const Icon(
-                                Icons.edit, size: 20,
-                              ), 
-                              onPressed: () {
-                  
+                              onTap: () {
                                 setState(() {
-                                  selectedVisite = snapshot.data![index];
-                                  txtNbVisiteurs.text = snapshot.data![index]['nbvisiteurs'].toString();
-                                  museeNum = int.parse(snapshot.data![index]['numMus'].toString());
-                                  jour = snapshot.data![index]['jour'].toString();
-                                  enableMoment = false;
-                                  enableMusee = false;
-                                  saveOrUpdateText = 'Modifier';
+                                  
                                 });
-                                _showDialog();
-                                },),
-                  
-                                IconButton(icon: const Icon(
-                                Icons.delete, size: 20,
-                              ), 
-                              onPressed: () {
-                                setState(() {
-                                  selectedVisite = snapshot.data![index];
-                                });
-                                _showDialogConfirmation();
-                              },),
-                            ],
-                          ),
+                              },
+                            );
+                          }).toList(),
                         ),
-                        const Divider()
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          )
+        )
         : Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -325,8 +344,15 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                       child: ElevatedButton(
                           onPressed: () async {
                             if (listMusee.isNotEmpty){
-                              save();
-                              Navigator.pop(context);
+                              setState(() {
+                                txtNbVisiteurs.text.trim().isEmpty
+                                    ? validate_nbVisiteurs = false
+                                    : validate_nbVisiteurs = true;
+                              });
+                              if (validate_nbVisiteurs) {
+                                save();
+                                Navigator.pop(context);
+                              }
                             }else{
                               Fluttertoast.showToast(
                                 msg: "Veuillez enregistrer d'abord un musée",
@@ -428,29 +454,25 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
 
   @override
   void save() {
-    setState(() {
-      txtNbVisiteurs.text.trim().isEmpty
-          ? validate_nbVisiteurs = false
-          : validate_nbVisiteurs = true;
-    });
-    if (validate_nbVisiteurs) {
+    
       Visiter visiter= Visiter(
         jour: dateText,
         numMus: museeNum, 
         nbvisiteurs: int.parse(txtNbVisiteurs.text.trim()),
       );
 
-      //Enregistrer le moment
-      Moment moment = Moment(jour: dateText);
-      momentBloc.addMoment(moment);
+      
       
       if (saveOrUpdateText == 'Enregistrer'){
+        //Enregistrer le moment
+        Moment moment = Moment(jour: dateText);
+        momentBloc.addMoment(moment);
         visiterBloc.addVisite(visiter);
       }else{
         print(visiter.jour);
         visiterBloc.updateVisite(visiter);
       }
-    }
+    
      
   }
 

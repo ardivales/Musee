@@ -28,6 +28,7 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
   final PaysBloc paysBloc = PaysBloc();
   List<Pays> listPays = [];
   late Musee selectedMusee ;
+  int numMus = 0;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
       listPays = value;
       if(listPays.isNotEmpty){
         codePays = listPays[0].codePays;
-        print('Liste des pays ${listPays[0].codePays}');
+        print('Liste des musées ${listPays[0].codePays}');
       }
       
     });
@@ -74,6 +75,7 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    Text(snapshot.data![index].numMus.toString(),style: const TextStyle(fontSize: 12.0),),
                                     Text(snapshot.data![index].nblivres.toString(),style: const TextStyle(fontSize: 12.0),),
                                     Text(snapshot.data![index].codePays.toString(),style: const TextStyle(fontSize: 12.0),),
                                   ],
@@ -94,6 +96,7 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
 
                               setState(() {
                                 selectedMusee = snapshot.data![index];
+                                numMus = snapshot.data![index].numMus;
                                 txtNomMus.text = snapshot.data![index].nomMus;
                                 txtNblivres.text = snapshot.data![index].nblivres.toString();
                                 codePays = snapshot.data![index].codePays.toString();
@@ -430,7 +433,7 @@ class _ListeMuseesState extends State<ListeMusees> implements AlertDialogCallbac
     if (validate_nom && validate_nblivres) {
       try{
         Musee musee = Musee(
-          numMus: 0,
+          numMus: numMus,
           nomMus: txtNomMus.text.trim(), 
           nblivres:  int.parse(txtNblivres.text.trim()),
           codePays: codePays,

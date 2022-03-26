@@ -37,7 +37,7 @@ class DatabaseProvider{
 
     await db.execute("""
             CREATE TABLE MUSEE (
-              numMus INTEGER PRIMARY KEY AUTOINCREMENT,
+              numMus INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
               nomMus TEXT NOT NULL,
               nblivres INTEGER NOT NULL,
               codePays TEXT NOT NULL,

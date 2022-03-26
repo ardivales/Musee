@@ -12,7 +12,13 @@ class MuseeDao{
 
   Future<int> insertMusee(Musee musee) async {
     final db = await databaseProvider.database;
-    return await db.insert("MUSEE", musee.toJsonWithNumMus());
+
+    const column = 'codePays, nomMus, nblivres';
+    final values = "'${musee.codePays}', '${musee.nomMus}', ${musee.nblivres}";
+    final id = await db.rawInsert('INSERT INTO MUSEE ($column) VALUES($values)');
+    
+    return id;
+    // return await db.insert("MUSEE", musee.toJson());
   }
 
   Future<List<Musee>> getMusees() async{
@@ -24,6 +30,7 @@ class MuseeDao{
     return result.map((json)=>Musee.fromJson(json)).toList();
     
   }
+
 
   Future<int> updateMusee(Musee musee) async{
     final db = await databaseProvider.database;

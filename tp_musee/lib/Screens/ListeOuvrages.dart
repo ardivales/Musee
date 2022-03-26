@@ -340,8 +340,21 @@ class _ListeOuvragesState extends State<ListeOuvrages> {
                       height: 40,
                       child: ElevatedButton(
                           onPressed: () async {
-                            save();
-                            Navigator.pop(context);
+                            setState(() {
+                              txtISBN.text.trim().isEmpty
+                                  ? validate_isbn = false
+                                  : validate_isbn = true;
+                              txtNbPage.text.trim().isEmpty
+                                  ? validate_nbpage = false
+                                  : validate_nbpage = true;
+                              txtTitre.text.trim().isEmpty
+                                  ? validate_titre = false
+                                  : validate_titre = true;
+                            });
+                            if (validate_isbn && validate_nbpage && validate_titre) {
+                              save();
+                              Navigator.pop(context);
+                            }
                           },
                           style: ButtonStyle(
                               backgroundColor:
@@ -431,18 +444,7 @@ class _ListeOuvragesState extends State<ListeOuvrages> {
 
   @override
   void save() {
-    setState(() {
-      txtISBN.text.trim().isEmpty
-          ? validate_isbn = false
-          : validate_isbn = true;
-      txtNbPage.text.trim().isEmpty
-          ? validate_nbpage = false
-          : validate_nbpage = true;
-      txtTitre.text.trim().isEmpty
-          ? validate_titre = false
-          : validate_titre = true;
-    });
-    if (validate_isbn && validate_nbpage && validate_titre) {
+    
       Ouvrage ouvrage= Ouvrage(
         isbn: txtISBN.text.trim(),
         titre: txtTitre.text.trim(), 
@@ -455,7 +457,7 @@ class _ListeOuvragesState extends State<ListeOuvrages> {
         ouvrageBloc.updateOuvrage(ouvrage);
       }
      
-    }
+    
   }
 
   @override
