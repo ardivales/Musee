@@ -136,6 +136,8 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                                                     onPressed: () {
                                                       setState(() {
                                                         selectedVisite = visite;
+                                                        jour = visite['jour'].toString();
+                                                        dateText = visite['jour'].toString();
                                                       });
                                                       _showDialogConfirmation();
                                                     },),
@@ -429,7 +431,9 @@ class _ListeVisitesState extends State<ListeVisites> implements AlertDialogCallb
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                        delete(jour, museeNum);
+                      print(dateText);
+                      print(museeNum);
+                        delete(dateText, museeNum);
                         Navigator.pop(context);
                     });
                   },
